@@ -73,5 +73,5 @@ Tar is located at /backup/archive/archive_YYYYMMDDHHmmss.tgz
 
 ## Restore 
 
-See RESTORE  PROCEDURE.md 
+See  [RESTORE PROCEDURE](doc/RESTORE PROCEDURE.md)
 

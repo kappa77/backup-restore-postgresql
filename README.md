@@ -39,7 +39,8 @@ A posgresql restart is needed
 > `bash set_archive.bash`
 > 
 > `service postgresql restart`
-> 
+>
+
 ### backup.bash
 
 

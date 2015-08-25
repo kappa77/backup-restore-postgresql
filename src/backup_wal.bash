@@ -11,5 +11,3 @@ echo "Primo argomente $1"
 test ! -d $ARCHIVEBKP && mkdir $ARCHIVEBKP
 
 tar czf  $TARARCFILE $ARCHIVEDIR 
-
-

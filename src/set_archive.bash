@@ -1,7 +1,7 @@
 #!/bin/bash
-PGDATA=/var/lib/postgresql/9.3/mainv
+PGDATA=/var/lib/postgresql/9.4/main
 
-ETCPOSTGR=/etc/postgresql/9.3/main
+ETCPOSTGR=/etc/postgresql/9.4/main
 
 ARCHIVEDIR=/archive
 

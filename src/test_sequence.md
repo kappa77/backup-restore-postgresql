@@ -2,112 +2,104 @@
 
 ## Prepare enviroment
 
-mkdir /archive
-mkdir /archive/restore
-mkdir /backup
-chown postgres  /archive
-chown postgres  /archive/restore
-chown postgres  /backup
+	mkdir /archive
+	mkdir /archive/restore
+	mkdir /backup
+	chown postgres  /archive
+	chown postgres  /archive/restore
+	chown postgres  /backup
 
 
 ## Reset database data
 
-su - postgres
+	su - postgres
 
-pg_dropcluster 9.4 main --stop
-pg_createcluster 9.4 main
-rm /archive/0*
+	pg_dropcluster 9.4 main --stop
+	pg_createcluster 9.4 main
+	rm /archive/0*
 
-bash set_archive.bash
+	bash set_archive.bash
 
-service postgresql start
+	service postgresql start
 
 ## Create database
 
-bash test_setup.bash
-
-bash add_rows.bash
-bash add_rows.bash
-bash check_table.bash
+	bash test_setup.bash
+	bash add_rows.bash
+	bash add_rows.bash
+	bash check_table.bash
   
----  300000
+	##---  300000
 
 ## Make backup 
 
 ### Base backup
 
-bash backup.bash
+	bash backup.bash
 
-bash check_table.bash
+	bash check_table.bash
 
 ### WAL archive backup 
 
-bash backup_wal_last.bash
+	bash backup_wal_last.bash
 
-bash add_rows.bash
-bash add_rows.bash
-bash check_table.bash
-  
-  ---- 500000
-  
-bash backup_wal_last.bash
+	bash add_rows.bash
+	bash add_rows.bash
+	bash check_table.bash
+	#---- 500000
 
-bash add_rows.bash
-bash add_rows.bash
-bash check_table.bash
+	bash backup_wal_last.bash
+	bash add_rows.bash
+	bash add_rows.bash
+	bash check_table.bash
 
- ---- 700000
+	# ---- 700000
 
 ### Restore
 
-#### Fault simulation 
+#### 1. Fault simulation 
 
-rm -fr 9.4/main/*
+	rm -fr 9.4/main/*
+	ps aux | grep postgres
 
-ps aux | grep postgres
+#### 2.1 Restore with archive in tgz only
 
-#### Restore with archive in tgz only
+	mkdir 9.4/main/pg_xlog
+	tar xzf /backup/basebackup_last.tgz -C /
+	rm /archive/restore/*
+	tar xzf /backup/archive_last.tgz  -C /archive/restore/ 
+	bash set_restore.bash
 
-mkdir 9.4/main/pg_xlog
+	#   Open a tail -f session to see error on postgresql log
 
-tar xzf /backup/basebackup_last.tgz -C /
+	tail -f /var/log/postgresql/postgresql.log
 
-rm /archive/restore/*
-
-tar xzf /backup/archive_last.tgz  -C /archive/restore/ 
-
-bash set_restore.bash
-
-#### Open a tail -f session to see error on postgresql log
-
-
-service postgresql start
-
-bash check_table.bash 
-
--- should be 500000
+	service postgresql start
+	
+	bash check_table.bash 
+	
+	#-- should be 500000
 
 
 
-#### Restore with archive in tgz and in /archive/ ( same first 20 digits ).
+#### 2.2 Restore with archive in tgz and in /archive/ ( same first 20 digits ).
 
-mkdir 9.4/main/pg_xlog
+	mkdir 9.4/main/pg_xlog
+	tar xzf /backup/basebackup_last.tgz -C /
+	rm /archive/restore/*
+	tar xzf /backup/archive_last.tgz  -C /archive/restore/ 
 
-tar xzf /backup/basebackup_last.tgz -C /
+Check if  there are in `/archive/` more recent wal file that ones stored in `/archive/restore/` , if so copy them in `/archive/restore/`
 
-rm /archive/restore/*
+	bash set_restore.bash
 
-tar xzf /backup/archive_last.tgz  -C /archive/restore/ 
+#   Open a tail -f session to see error on postgresql log
 
-bash set_restore.bash
+	tail -f /var/log/postgresql/postgresql.log
 
-#### Open a tail -f session to see error on postgresql log
-
-
-service postgresql start
-
-bash check_table.bash 
-
-
--- should be 700000
+	service postgresql start
+	
+	bash check_table.bash 
+	
+	#-- should be 700000
 

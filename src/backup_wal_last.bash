@@ -24,16 +24,24 @@ psql -c "select pg_switch_xlog()"
 for i in `ls -r $ARCHIVEDIR | grep -v tmp `; do 
 if [  -f $ARCHIVEDIR"/"$i ] 
 then 
-  if   [[ "$i" > $lastbackup ]] || [[  "$i" = $lastbackup ]] 
+  if  [ "$i" \> "$lastbackup" ] || [[  "$i" = "$lastbackup" ]] 
   then 
-      echo "To archive ${i}" 
+      echo "To archive ${i} : ${i} \> $lastbackup " 
+      if  [[  "$i" = "$lastbackup" ]]
+      then  
+          echo "$i = $lastbackup"
+      fi
+      if [ "$i" \> "$lastbackup" ]
+      then 
+          echo "Reason : $i > ${lastbackup}"
+      fi
+      echo "lastbackup ${lastbackup}"	
       files="${files} ${i}" 
- # else
-   
-#      echo "To ignore ${i}"
+  else 
+      echo "To ignore ${i}"
   fi 
 else
-  echo "To ignore ${i}"
+  echo "To ignore $ARCHIVEDIR / ${i}"
 fi ; 
 done
 

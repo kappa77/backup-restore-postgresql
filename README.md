@@ -44,9 +44,12 @@ A posgresql restart is needed
 ### backup.bash
 
 
-This command create a tar of entire postgresql directory ***including pg_xlog directory*** 
+This command create a tar of entire PostgresSQL directory ***including pg_xlog directory*** 
 
-Tar is located at /backup/YYYYMMDDhhmmss/backup_YYYYMMDDhhmmss.tgz
+Tar is located at /backup/YYYYMMDD/basebackup_last.tgz
+
+Tar is located at /backup/YYYYMMDD/backup_BACKUPID_YYYYMMDDHHmmss.tgz
+
 
 #### Example
 
@@ -56,22 +59,26 @@ Tar is located at /backup/YYYYMMDDhhmmss/backup_YYYYMMDDhhmmss.tgz
 > 
 
 
-### backup_wal.bash
+### backup_wal_last.bash
 
 
-This command create a tar of wal file located /archive directory
+This command create a tar of WAL file located /archive directory
 
-Tar is located at /backup/archive/archive_YYYYMMDDHHmmss.tgz
+Tar is located at /backup/archive_last.tgz
+
+Tar is located at /backup/YYYYMMDD/archive_BACKUPID_YYYYMMDDHHmmss.tgz
+
+A file /backup/last_archive_backup_label.info contain label of last archive log saved together with base backup done
 
 #### Example
 
 > 
-> `bash backup_wal.bash`
+> `bash backup_wal_last.bash`
 > 
 > 
 
 
-## Restore 
+## How to Restore 
 
-See  [RESTORE  PROCEDURE.md](doc/RESTORE  PROCEDURE.md)
+See  [test_sequence.md](doc/test_sequence.md)
 
